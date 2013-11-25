@@ -3,6 +3,8 @@
 
 ```grumble``` is a regular expression engine written in C++.
 
+[sample]("finitemachine.png")
+
 ##How It Works
 
 Internally, ```grumble```, consists of two main phases:
