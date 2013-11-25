@@ -5,7 +5,6 @@
 The following is a representation of the underlying data structure the engine is dependent on. Each node represents a state. Each state has several connections that connect to other nodes. The following shows a machine structure that will accept the string ```"CATZ"```. Although not displayed, each node has 128 connection (for the 128 ASCII characters), many of which are ```NULL```.
 
 <img src = "finitemachine.png">
-
 ##How It Works
 
 Internally, ```grumble```, consists of two main phases:
