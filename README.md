@@ -11,3 +11,10 @@ Internally, ```grumble```, consists of two main phases:
 
 - Interpret a regular expression string and create an identical node structure that represents the finite state automata machine.
 - Pass a string through the machine and see if it matches.
+
+```grumble``` currently can support simple regular expressions, such as
+```CAT.``` which matches a string starting with ```CAT``` and followed by any one random character.
+
+##Features
+
+There are several features which are not implemented yet. In order to implement more advanced features such as groupings, quantifiers, and more, a better tokenizer is needed for the regular expression itself. This extra lexing and parsing phase is necessary in order to construct more complex finite state machines.
