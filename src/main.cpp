@@ -7,8 +7,14 @@
 int main (int agrc, char* argv[])
 {
 
-    GRUMBLE::Grumble croc("s,d+");
-    std::cout << croc.match("CAT") << std::endl;
-
+    GRUMBLE::Grumble croc(".AT");
+    
+    while(true)
+    {
+    	std::string input;
+    	std::getline(std::cin,input);
+    	std::cout << croc.match(input) << std::endl;
+    }
+    	
 	return 0;
 }
