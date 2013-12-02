@@ -6,6 +6,24 @@
 The following is a representation of the underlying data structure the engine is dependent on. Each node represents a state. Each state has several connections that connect to other nodes. The following shows a machine structure that will accept the string ```"CATZ"```. Although not displayed, each node has 128 connection (for the 128 ASCII characters), many of which are ```NULL```.
 
 <img src = "finitemachine.png">
+##How To Use It
+```c++
+#include <iostream>
+#include <stdlib.h>
+#include "grumble.h"
+
+int main (int agrc, char* argv[])
+{
+    // Create the grumble regular expression object
+    GRUMBLE::Grumble croc("CAT.");
+    
+    // Test a string
+    bool result = croc.match("CATZ");
+            
+    return 0;
+}
+```
+
 ##How It Works
 
 Internally, ```grumble```, consists of two main phases:
