@@ -229,8 +229,13 @@ namespace GRUMBLE
 
 	bool Grumble::match(std::string test)
 	{
-		Machine bot(this -> regex);
-		return bot.feed(test);
+		Machine* bot = new Machine(this -> regex);
+		bool result = bot -> feed(test);
+
+		// clean up the machine
+		delete bot;
+		
+		return result;
 	}
 
 
