@@ -12,6 +12,25 @@
 namespace GRUMBLE
 {
 
+	/* Setup REGEX_MODIFIER used throughout the code */
+	class REGEX_MODIFIER{
+		public:
+			int TYPE;  // The name of the modifier (one or more, any char, zero or more)
+			int UPPER; // The upper bound of the modifier
+			int LOWER; // The lower bound of the modifier
+			int EXACT; // The exact bound of the modifier
+	};
+
+	// Token types
+	#define ANY_CHAR 0
+	#define PURE_CHAR 1
+	#define ESCAPED_CHAR 2
+
+	// Modifier types
+	#define ZERO_OR_MORE 3
+	#define ONE_OR_MORE 4
+	#define ZERO_OR_ONE 5
+
 	/* Represents each state in the regex machine */
 	class Node
 	{
@@ -79,7 +98,7 @@ namespace GRUMBLE
 	}
 
 
-	/* Does a depth search and creates a new handle */
+	/* Function that does a depth search and creates a new handle */
 	std::vector <Node*> getNewHandle(std::vector <Node*> oldHandle)
 	{
 		std::vector <Node*> newHandle;
@@ -95,6 +114,63 @@ namespace GRUMBLE
 			}
 		}
 		return newHandle;
+	}
+
+	/* Regular expression token struct for the parser */
+	class REGEX_TOKEN {
+
+		public:
+			int tokenType; // hold the modification on the token
+			std::string tokenValue;       // hold the token value
+
+	};
+
+	/* Parses the regular expression */
+	std::vector <REGEX_TOKEN> parseRegex(std::string regex)
+	{
+		std::vector<REGEX_TOKEN> thing;
+		int i;
+		for(i = 0; i < regex.size(); i++)
+		{
+			// Set up info about the character contexts
+			char currentChar = regex[i];
+			std::string currentCharString = "";
+			std::string nextCharString = "";
+			currentCharString += regex[i];
+			nextCharString += regex[i];
+
+			// Check for any escape sequences
+			if(currentChar == '\\')
+			{
+				REGEX_TOKEN escapeToken;
+				escapeToken.tokenType = ESCAPED_CHAR;
+				escapeToken.tokenValue = nextCharString;
+				thing.push_back(escapeToken);
+				i++;
+				continue;
+			}
+			// Check for any ANY_CHAR char
+			if(currentChar == '.')
+			{
+				REGEX_TOKEN anyToken;
+				anyToken.tokenType = ANY_CHAR;
+				// TODO: DETERMINE MODIFIERS AND QUANTIFIERS
+				anyToken.tokenValue = ".";
+				thing.push_back(anyToken);
+				continue;
+			}
+			// Check for a pure char
+			else
+			{
+				REGEX_TOKEN pureToken;
+				pureToken.tokenType = PURE_CHAR;
+				// TODO: DETERMINE MODIFIERS AND QUANTIFIERS
+				pureToken.tokenValue = currentCharString;
+				thing.push_back(pureToken);
+				continue;
+			}
+		}
+		return thing;
 	}
 
 	/* Object that respresents the machine that will be constructed for each regex */
@@ -116,7 +192,9 @@ namespace GRUMBLE
 	Machine::Machine(std::string regex)
 	{
 	
-		// Create the intial start node
+		std::vector<REGEX_TOKEN> tokens = parseRegex(regex);
+
+		// Create the intial start node for the machine
 		std::vector <Node*> currentNodes;
 		Node* newone = new Node();
 
@@ -128,12 +206,12 @@ namespace GRUMBLE
 		
 		// begin appending nodes based on regex
 		int i;
-		for(i = 0; i < regex.size(); i++)
+		for(i = 0; i < tokens.size(); i++)
 		{
-			char currentRegexChar = regex[i];
+			REGEX_TOKEN currentToken = tokens[i];
 			
 			// dot all match
-			if(currentRegexChar == '.')
+			if(currentToken.tokenType == ANY_CHAR)
 			{
 				// create nodes to match to all characters
 				for(int z = 0; z < currentNodes.size(); z++)
@@ -150,13 +228,32 @@ namespace GRUMBLE
 
 			}
 
+			// escape character match
+			else if (currentToken.tokenType == ESCAPED_CHAR)
+			{
+				if(currentToken.tokenValue == "\\")
+				{
+					for(int z = 0; z < currentNodes.size(); z++)
+					{
+						Node* now = currentNodes[z];
+						now -> addConnection(currentToken.tokenValue[0]);
+					}
+					
+				}
+
+				/* TODO: IMPLEMENT MORE ESCAPE CHARACTERS */
+
+				// get handle on new nodes
+				currentNodes = getNewHandle(currentNodes);
+			}
+
 			// literal character match
-			else
+			else if (currentToken.tokenType == PURE_CHAR)
 			{
 				for(int z = 0; z < currentNodes.size(); z++)
 				{
 					Node* now = currentNodes[z];
-					now -> addConnection(currentRegexChar);
+					now -> addConnection(currentToken.tokenValue[0]);
 				}
 
 				// get handle on new nodes

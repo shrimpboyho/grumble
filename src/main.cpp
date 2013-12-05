@@ -7,7 +7,7 @@
 int main (int agrc, char* argv[])
 {
 
-    GRUMBLE::Grumble croc("CAT.");
+    GRUMBLE::Grumble croc("CAT/");
     
     while(true)
     {
