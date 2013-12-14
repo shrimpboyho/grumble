@@ -180,6 +180,9 @@ namespace GRUMBLE
 			// Constructor
 			Machine(std::string);
 
+			// regular expression the machine represents
+			std::string regex;
+
 			// Machine current node
 			Node* current;
 
@@ -191,7 +194,8 @@ namespace GRUMBLE
 	/* Constructor sets up machine based on regex provided */
 	Machine::Machine(std::string regex)
 	{
-	
+		
+		this -> regex = regex;
 		std::vector<REGEX_TOKEN> tokens = parseRegex(regex);
 
 		// Create the intial start node for the machine
@@ -286,9 +290,9 @@ namespace GRUMBLE
 	bool Machine::feed(std::string input)
 	{
 		// Set up the index character of the input string
-		int i = 0;
+		int i;
 
-		while(true)
+		for(i = 0; i < input.size(); i++)
 		{
 			char currentChar = input[i];
 			std::cout << "On input string char: " << currentChar << std::endl;
@@ -298,7 +302,6 @@ namespace GRUMBLE
 			std::cout << "On node with capture of: " << (char) current -> capture << std::endl;
 			if(current -> end == true && i == input.size() - 1)
 				return true;
-			i++;
 		}
 	}
 
