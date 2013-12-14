@@ -128,7 +128,7 @@ namespace GRUMBLE
 	/* Parses the regular expression */
 	std::vector <REGEX_TOKEN> parseRegex(std::string regex)
 	{
-		std::vector<REGEX_TOKEN> thing;
+		std::vector<REGEX_TOKEN> thing; // Represents the regular expression lexicon structure
 		int i;
 		for(i = 0; i < regex.size(); i++)
 		{
@@ -194,8 +194,11 @@ namespace GRUMBLE
 	/* Constructor sets up machine based on regex provided */
 	Machine::Machine(std::string regex)
 	{
-		
+
+		// Set internal regex
 		this -> regex = regex;
+
+		// Obtain an AST of the regular expression
 		std::vector<REGEX_TOKEN> tokens = parseRegex(regex);
 
 		// Create the intial start node for the machine
