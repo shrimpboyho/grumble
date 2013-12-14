@@ -8,12 +8,16 @@ int main (int agrc, char* argv[])
 {
 
     GRUMBLE::Grumble croc("CAT\+");
+
+    // Test the getAllMatches() method
+    croc.getAllMatches("ABCDEF");
     
+    // Test given input to regular expression
     while(true)
     {
     	std::string input;
     	std::getline(std::cin,input);
-    	std::cout << croc.match(input) << std::endl;
+    	std::cout << croc.matchEntireString(input) << std::endl;
     }
     	
 	return 0;

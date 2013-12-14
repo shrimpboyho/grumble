@@ -317,7 +317,8 @@ namespace GRUMBLE
 		public:
 			Grumble(std::string);
 			~Grumble();
-			bool match(std::string);
+			bool matchEntireString(std::string);
+			std::vector< std::pair<int, std::string> > getAllMatches(std::string test);
 	};
 
 	Grumble::Grumble(std::string regex)
@@ -330,7 +331,8 @@ namespace GRUMBLE
     	// TODO
 	}
 
-	bool Grumble::match(std::string test)
+	// Checks if the entire string matches the regular expression and returns a boolean
+	bool Grumble::matchEntireString(std::string test)
 	{
 		Machine* bot = new Machine(this -> regex);
 		bool result = bot -> feed(test);
@@ -339,6 +341,35 @@ namespace GRUMBLE
 		delete bot;
 		
 		return result;
+	}
+
+	// Returns a vector full of pairs.
+	// Each pair contains index where the match was found, along with the match string
+	std::vector< std::pair<int, std::string> > Grumble::getAllMatches(std::string test)
+	{
+		// Vector holds the main data structure that this function will return
+		std::vector< std::pair<int, std::string> > matches;
+
+		// get all possible substrings of the test string
+		std::vector <std::string> tests;
+		for(int i = 0; i < test.size(); i++)
+		{
+			std::string part = test.substr(i, test.size() + 1);
+			for(int k = 0; k < part.size(); k++)
+			{
+				std::string party = part.substr(0, k + 1);
+				tests.push_back(party);
+			}
+		}
+
+		// Print out all the found substrings
+		std::cout << "GENERATED SUBSTRINGS:" << std::endl;
+		for(int i = 0; i < tests.size(); i++)
+		{
+			std::cout << tests[i] << std::endl;
+		}
+		
+		return matches;
 	}
 
 
