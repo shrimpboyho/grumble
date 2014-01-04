@@ -12,6 +12,10 @@
 namespace GRUMBLE
 {
 
+	/* Set up some typedefs */
+	typedef std::pair<int,std::string> MATCH;
+	typedef std::vector<std::pair<int,std::string>> MATCH_VECTOR;
+
 	/* Setup REGEX_MODIFIER used throughout the code */
 	class REGEX_MODIFIER{
 		public:
@@ -318,7 +322,7 @@ namespace GRUMBLE
 			Grumble(std::string);
 			~Grumble();
 			bool matchEntireString(std::string);
-			std::vector< std::pair<int, std::string> > getAllMatches(std::string test);
+			MATCH_VECTOR getAllMatches(std::string test);
 	};
 
 	Grumble::Grumble(std::string regex)
@@ -345,10 +349,10 @@ namespace GRUMBLE
 
 	// Returns a vector full of pairs.
 	// Each pair contains index where the match was found, along with the match string
-	std::vector< std::pair<int, std::string> > Grumble::getAllMatches(std::string test)
+	MATCH_VECTOR Grumble::getAllMatches(std::string test)
 	{
 		// Vector holds the main data structure that this function will return
-		std::vector< std::pair<int, std::string> > matches;
+		MATCH_VECTOR matches;
 
 		// get all possible substrings of the test string
 		std::vector <std::string> tests;
