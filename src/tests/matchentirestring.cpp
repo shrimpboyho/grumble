@@ -2,13 +2,13 @@
 #include <fstream>
 #include <vector>
 #include <stdlib.h>
-#include "grumble.h"
+#include "../grumble.h"
 
 int main (int agrc, char* argv[])
 {
 
     GRUMBLE::Grumble croc("CAT\+");
-    
+
     // Test given input to regular expression
     while(true)
     {

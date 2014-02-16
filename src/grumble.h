@@ -355,22 +355,18 @@ namespace GRUMBLE
 		MATCH_VECTOR matches;
 
 		// get all possible substrings of the test string
-		std::vector <std::string> tests;
 		for(int i = 0; i < test.size(); i++)
 		{
 			std::string part = test.substr(i, test.size() + 1);
 			for(int k = 0; k < part.size(); k++)
 			{
 				std::string party = part.substr(0, k + 1);
-				tests.push_back(party);
-			}
-		}
 
-		// Print out all the found substrings
-		std::cout << "GENERATED SUBSTRINGS:" << std::endl;
-		for(int i = 0; i < tests.size(); i++)
-		{
-			std::cout << tests[i] << std::endl;
+				// Test out the substring and if it works it is a match
+				Grumble thing(this -> regex);
+				if(thing.matchEntireString(party))
+					matches.push_back(std::pair <int, std::string>(i, party));
+			}
 		}
 		
 		return matches;
