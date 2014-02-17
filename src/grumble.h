@@ -141,7 +141,8 @@ namespace GRUMBLE
 			std::string currentCharString = "";
 			std::string nextCharString = "";
 			currentCharString += regex[i];
-			nextCharString += regex[i];
+			if(i != regex.size() - 1)
+				nextCharString += regex[i + 1];
 
 			// Check for any escape sequences
 			if(currentChar == '\\')
@@ -242,12 +243,44 @@ namespace GRUMBLE
 			// escape character match
 			else if (currentToken.tokenType == ESCAPED_CHAR)
 			{
+				
+				// if the escaped character is an escape character
 				if(currentToken.tokenValue == "\\")
 				{
 					for(int z = 0; z < currentNodes.size(); z++)
 					{
 						Node* now = currentNodes[z];
 						now -> addConnection(currentToken.tokenValue[0]);
+					}
+					
+				}
+
+				// if the escaped character is a digit escape char
+				if(currentToken.tokenValue == "d")
+				{
+					for(int z = 0; z < currentNodes.size(); z++)
+					{
+						Node* now = currentNodes[z];
+						for(int k = 48; k < 58; k++)
+							now -> addConnection(k);
+						
+					}
+					
+				}
+
+				// if the escaped character is a whitespace escape char
+				if(currentToken.tokenValue == "s")
+				{
+					for(int z = 0; z < currentNodes.size(); z++)
+					{
+						Node* now = currentNodes[z];
+						now -> addConnection(' ');
+						now -> addConnection('\t');
+						now -> addConnection('\n');
+						now -> addConnection('\r');
+						now -> addConnection('\f');
+						now -> addConnection('\v');
+						
 					}
 					
 				}
