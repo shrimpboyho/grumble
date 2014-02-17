@@ -29,11 +29,13 @@ namespace GRUMBLE
 	#define ANY_CHAR 0
 	#define PURE_CHAR 1
 	#define ESCAPED_CHAR 2
+	#define SPECIFICATION_GROUP 6
+	#define REGEX_INNER 7
 
-	// Modifier types
-	#define ZERO_OR_MORE 3
-	#define ONE_OR_MORE 4
-	#define ZERO_OR_ONE 5
+	// Simple modifier types
+	#define ZERO_OR_MORE "*"
+	#define ONE_OR_MORE "+"
+	#define ZERO_OR_ONE "?"
 
 	/* Represents each state in the regex machine */
 	class Node
@@ -125,9 +127,49 @@ namespace GRUMBLE
 
 		public:
 			int tokenType; // hold the modification on the token
-			std::string tokenValue;       // hold the token value
-
+			std::string tokenValue; // hold the token value
+			
+			std::string simpleQuantifier; // holds quantifiers such as +, *, or ?
+			std::string exactQuantifier; // holds exact number quantifiers such as {23}
+			std::pair <std::string, std::string> boundQuantifier; // holds quantifiers with bounds such as {1,4}
+		
+		REGEX_TOKEN(){
+			simpleQuantifier = "";
+			exactQuantifier = "";
+			boundQuantifier.first = "";
+			boundQuantifier.second = "";
+		}
 	};
+
+	/* Parses the quantifiers */
+	int findQuantifiers(std::string regex, REGEX_TOKEN &token, int i)
+	{
+		std::cout << "Recieved token: " << token.tokenValue << "\n";
+		char current = regex[i];
+
+		if(current == '*')
+		{
+			token.simpleQuantifier = ZERO_OR_MORE;
+			return i;
+		}
+		if(current == '+')
+		{
+			token.simpleQuantifier = ONE_OR_MORE;
+			return i;
+		}
+		if(current == '?')
+		{
+			token.simpleQuantifier = ZERO_OR_ONE;
+			return i;
+		}
+		if(current != '{')
+			return -1;
+
+		// TODO: Add code for complex quantifiers
+
+		return -1;
+
+	}
 
 	/* Parses the regular expression */
 	std::vector <REGEX_TOKEN> parseRegex(std::string regex)
@@ -150,7 +192,10 @@ namespace GRUMBLE
 				REGEX_TOKEN escapeToken;
 				escapeToken.tokenType = ESCAPED_CHAR;
 				escapeToken.tokenValue = nextCharString;
+				int r = findQuantifiers(regex, escapeToken, i + 2);
 				thing.push_back(escapeToken);
+				if(r != -1)
+					i = r;
 				i++;
 				continue;
 			}
@@ -159,9 +204,11 @@ namespace GRUMBLE
 			{
 				REGEX_TOKEN anyToken;
 				anyToken.tokenType = ANY_CHAR;
-				// TODO: DETERMINE MODIFIERS AND QUANTIFIERS
 				anyToken.tokenValue = ".";
+				int r = findQuantifiers(regex, anyToken, i + 1);
 				thing.push_back(anyToken);
+				if(r != -1)
+					i = r;
 				continue;
 			}
 			// Check for a pure char
@@ -169,9 +216,11 @@ namespace GRUMBLE
 			{
 				REGEX_TOKEN pureToken;
 				pureToken.tokenType = PURE_CHAR;
-				// TODO: DETERMINE MODIFIERS AND QUANTIFIERS
 				pureToken.tokenValue = currentCharString;
+				int r = findQuantifiers(regex, pureToken, i + 1);
 				thing.push_back(pureToken);
+				if(r != -1)
+					i = r;
 				continue;
 			}
 		}
@@ -205,6 +254,20 @@ namespace GRUMBLE
 
 		// Obtain an AST of the regular expression
 		std::vector<REGEX_TOKEN> tokens = parseRegex(regex);
+
+		// Print the AST
+		std::cout << "=========REGEX AST==========" << std::endl;
+		for(int i = 0; i < tokens.size(); i++)
+		{
+			REGEX_TOKEN current = tokens[i];
+			std::cout << "tokenType: " << current.tokenType << std::endl;
+			std::cout << "tokenValue: " << current.tokenValue << std::endl;
+			std::cout << "simpleQuantifier: " << current.simpleQuantifier << std::endl;
+			std::cout << "exactQuantifier: " << current.exactQuantifier << std::endl;
+			std::cout << "lower boundQuantifier: " << current.boundQuantifier.first << std::endl;
+			std::cout << "upper boundQuantifier: " << current.boundQuantifier.second << std::endl;
+			std::cout << "============================" << std::endl;
+		}
 
 		// Create the intial start node for the machine
 		std::vector <Node*> currentNodes;
