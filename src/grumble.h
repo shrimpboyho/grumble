@@ -164,8 +164,30 @@ namespace GRUMBLE
 		}
 		if(current != '{')
 			return -1;
+		else
+		{
+			int k = i;
+			// We have a complex quantifier. Must find the closing curly braces.
+			for(k; k < regex.size(); k++)
+				if(regex[k] == '}')
+					break;
+			std::string quantifier = std::string(regex.begin() + i + 1, regex.begin() + k - 1);
+			// Exact quantifier
+			if(quantifier.find(',') == std::string::npos)
+			{
+				token.exactQuantifier = quantifier;
+				return k;
+			}
+			// Bounds quantifier
+			else
+			{
+				int pos = quantifier.find(',');
+				token.boundQuantifier.first = quantifier.substr(0, pos);
+				token.boundQuantifier.second = quantifier.substr(pos + 1, quantifier.size() - 1);
+				return k;
+			}
 
-		// TODO: Add code for complex quantifiers
+		}
 
 		return -1;
 
@@ -192,11 +214,11 @@ namespace GRUMBLE
 				REGEX_TOKEN escapeToken;
 				escapeToken.tokenType = ESCAPED_CHAR;
 				escapeToken.tokenValue = nextCharString;
-				int r = findQuantifiers(regex, escapeToken, i + 2);
+				i++;
+				int r = findQuantifiers(regex, escapeToken, i + 1);
 				thing.push_back(escapeToken);
 				if(r != -1)
 					i = r;
-				i++;
 				continue;
 			}
 			// Check for any ANY_CHAR char
