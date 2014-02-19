@@ -141,6 +141,15 @@ namespace GRUMBLE
 		}
 	};
 
+	/* Useful data type manipulation functions */
+	inline std::string slice(std::string s, int a, int b)
+	{
+		std::string c = "";
+		for(a; a < b; a++)
+			c += s[a];
+		return c;
+	}
+
 	/* Parses the quantifiers */
 	int findQuantifiers(std::string regex, REGEX_TOKEN &token, int i)
 	{
@@ -171,7 +180,7 @@ namespace GRUMBLE
 			for(k; k < regex.size(); k++)
 				if(regex[k] == '}')
 					break;
-			std::string quantifier = std::string(regex.begin() + i + 1, regex.begin() + k - 1);
+			std::string quantifier = slice(regex, i + 1, k);
 			// Exact quantifier
 			if(quantifier.find(',') == std::string::npos)
 			{
@@ -182,8 +191,8 @@ namespace GRUMBLE
 			else
 			{
 				int pos = quantifier.find(',');
-				token.boundQuantifier.first = quantifier.substr(0, pos);
-				token.boundQuantifier.second = quantifier.substr(pos + 1, quantifier.size() - 1);
+				token.boundQuantifier.first = slice(quantifier, 0, pos);
+				token.boundQuantifier.second = slice(quantifier, pos + 1, quantifier.size());
 				return k;
 			}
 
@@ -233,6 +242,26 @@ namespace GRUMBLE
 					i = r;
 				continue;
 			}
+			// Check for inner regex (within ())
+			if(currentChar == '(')
+			{
+				REGEX_TOKEN innerToken;
+				innerToken.tokenType = REGEX_INNER;
+				// Find ending parenthesis
+				int k = i;
+				for(k; k < regex.size(); k++)
+					if(regex[k] == ')' && regex[k - 1] != '\\')
+						break;
+				std::string inner = slice(regex, i + 1, k);
+				i = k;
+				innerToken.tokenValue = inner;
+				int r = findQuantifiers(regex, innerToken, i + 1);
+				thing.push_back(innerToken);
+				if(r != -1)
+					i = r;
+				continue;
+			}
+
 			// Check for a pure char
 			else
 			{
