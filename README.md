@@ -1,4 +1,4 @@
-[grumble]() - A Regular Expression Engine
+[grumble]() - A Hack of a Regular Expressions Engine
 =======
 [![Build Status](https://drone.io/github.com/shrimpboyho/grumble/status.png)](https://drone.io/github.com/shrimpboyho/grumble/latest)
 
