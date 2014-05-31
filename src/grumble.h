@@ -84,7 +84,7 @@ namespace GRUMBLE
 			// Function that adds a connection
 			Node* addConnection(int);
 
-			// Function taht returns a connection
+			// Function that returns a connection
 			Node* getConnection(int);
 
 			// Function that tests if the given matches the capture

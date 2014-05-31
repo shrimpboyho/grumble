@@ -7,7 +7,7 @@
 int main (int agrc, char* argv[])
 {
 
-    GRUMBLE::Grumble croc("CAT.");
+    GRUMBLE::Grumble croc("CAT\\\\");
     
     // Test given input to regular expression
     while(true)

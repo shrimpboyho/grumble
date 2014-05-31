@@ -30,7 +30,7 @@ This project aims to support a subset of the ECMAScript regular expressions synt
 
 Taken directly from the Python Docs:
 
-> Regular expressions use the backslash character ('\') to indicate special forms or to allow special characters to be used without invoking their special meaning. This collides with C++'s usage of the same character for the same purpose in string literals; for example, to match a literal backslash, one might have to write '\\\\' as the pattern string, because the regular expression must be \\, and each backslash must be expressed as \\ inside a regular C++ string literal.
+> Regular expressions use the backslash character ('\') to indicate special forms or to allow special characters to be used without invoking their special meaning. This collides with C++'s usage of the same character for the same purpose in string literals; for example, to match a literal backslash, one might have to write '\\\\\\\\' as the pattern string, because the regular expression must be \\\\, and each backslash must be expressed as \\\\ inside a regular C++ string literal.
 
 ##How It Works
 
