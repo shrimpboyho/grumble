@@ -37,6 +37,25 @@ namespace GRUMBLE
 	#define ONE_OR_MORE "+"
 	#define ZERO_OR_ONE "?"
 
+	/* Regular expression token struct for the parser */
+	class REGEX_TOKEN {
+
+		public:
+			int tokenType; // hold the modification on the token
+			std::string tokenValue; // hold the token value
+			
+			std::string simpleQuantifier; // holds quantifiers such as +, *, or ?
+			std::string exactQuantifier; // holds exact number quantifiers such as {23}
+			std::pair <std::string, std::string> boundQuantifier; // holds quantifiers with bounds such as {1,4}
+		
+		REGEX_TOKEN(){
+			simpleQuantifier = "";
+			exactQuantifier = "";
+			boundQuantifier.first = "";
+			boundQuantifier.second = "";
+		}
+	};
+
 	/* Represents each state in the regex machine */
 	class Node
 	{
@@ -46,6 +65,12 @@ namespace GRUMBLE
 
 			// Sets a recursion limit
 			int limit;
+
+			// Sets the amount of visits the node recieved
+			int visits;
+
+			// The token which houses all information about the node's quanitifers
+			REGEX_TOKEN rootToken;
 
 			// The character the Node is set to capture
 			int capture;
@@ -64,6 +89,9 @@ namespace GRUMBLE
 
 			// Function that tests if the given matches the capture
 			bool test(int);
+
+			// Function that increments the value of visits
+			void incrementVisits();
 	};
 
 	/* Constructor for the node object */
@@ -71,6 +99,7 @@ namespace GRUMBLE
 	{
 		this -> end = false;
 		this -> limit = limit;
+		this -> visits = 0;
 		if(capture != 0)
 			this -> capture = capture;
 		
@@ -95,6 +124,7 @@ namespace GRUMBLE
 		return this -> connections[i];
 	}
 
+	/* Tests to see if the given input matches what the node should capture */
 	bool Node::test(int given)
 	{
 		if(given == this -> capture)
@@ -103,6 +133,11 @@ namespace GRUMBLE
 			return false;
 	}
 
+	/* Marks that the node has been visited */
+	void Node::incrementVisits()
+	{
+		(this -> visits) += 1;
+	}
 
 	/* Function that does a depth search and creates a new handle */
 	std::vector <Node*> getNewHandle(std::vector <Node*> oldHandle)
@@ -122,25 +157,6 @@ namespace GRUMBLE
 		return newHandle;
 	}
 
-	/* Regular expression token struct for the parser */
-	class REGEX_TOKEN {
-
-		public:
-			int tokenType; // hold the modification on the token
-			std::string tokenValue; // hold the token value
-			
-			std::string simpleQuantifier; // holds quantifiers such as +, *, or ?
-			std::string exactQuantifier; // holds exact number quantifiers such as {23}
-			std::pair <std::string, std::string> boundQuantifier; // holds quantifiers with bounds such as {1,4}
-		
-		REGEX_TOKEN(){
-			simpleQuantifier = "";
-			exactQuantifier = "";
-			boundQuantifier.first = "";
-			boundQuantifier.second = "";
-		}
-	};
-
 	/* Useful data type manipulation functions */
 	inline std::string slice(std::string s, int a, int b)
 	{
@@ -148,6 +164,16 @@ namespace GRUMBLE
 		for(a; a < b; a++)
 			c += s[a];
 		return c;
+	}
+	inline std::string delSpaces(std::string str) 
+	{
+    	for (size_t i = 0; i < str.length(); i++) {
+	        if (str[i] == ' ' || str[i] == '\n' || str[i] == '\t') {
+	            str.erase(i, 1);
+	            i--;
+	        }
+	    }
+	    return str;
 	}
 
 	/* Parses the quantifiers */
@@ -184,15 +210,15 @@ namespace GRUMBLE
 			// Exact quantifier
 			if(quantifier.find(',') == std::string::npos)
 			{
-				token.exactQuantifier = quantifier;
+				token.exactQuantifier = delSpaces(quantifier);
 				return k;
 			}
 			// Bounds quantifier
 			else
 			{
 				int pos = quantifier.find(',');
-				token.boundQuantifier.first = slice(quantifier, 0, pos);
-				token.boundQuantifier.second = slice(quantifier, pos + 1, quantifier.size());
+				token.boundQuantifier.first = delSpaces(slice(quantifier, 0, pos));
+				token.boundQuantifier.second = delSpaces(slice(quantifier, pos + 1, quantifier.size()));
 				return k;
 			}
 
@@ -454,6 +480,8 @@ namespace GRUMBLE
 			if(current == NULL)
 				return false;
 			std::cout << "On node with capture of: " << (char) current -> capture << std::endl;
+			// Mark a visit
+			current -> incrementVisits();
 			if(current -> end == true && i == input.size() - 1)
 				return true;
 		}
