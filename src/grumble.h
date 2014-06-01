@@ -369,6 +369,7 @@ namespace GRUMBLE
 				for(int z = 0; z < currentNodes.size(); z++)
 				{
 					Node* now = currentNodes[z];
+					now -> rootToken = currentToken;
 					for(int k = 0; k < 128; k++)
 					{
 						now -> addConnection(k);
@@ -390,6 +391,7 @@ namespace GRUMBLE
 					for(int z = 0; z < currentNodes.size(); z++)
 					{
 						Node* now = currentNodes[z];
+						now -> rootToken = currentToken;
 						now -> addConnection(currentToken.tokenValue[0]);
 					}
 					
@@ -401,6 +403,7 @@ namespace GRUMBLE
 					for(int z = 0; z < currentNodes.size(); z++)
 					{
 						Node* now = currentNodes[z];
+						now -> rootToken = currentToken;
 						for(int k = 48; k < 58; k++)
 							now -> addConnection(k);
 						
@@ -414,6 +417,7 @@ namespace GRUMBLE
 					for(int z = 0; z < currentNodes.size(); z++)
 					{
 						Node* now = currentNodes[z];
+						now -> rootToken = currentToken;
 						now -> addConnection(' ');
 						now -> addConnection('\t');
 						now -> addConnection('\n');
@@ -437,6 +441,7 @@ namespace GRUMBLE
 				for(int z = 0; z < currentNodes.size(); z++)
 				{
 					Node* now = currentNodes[z];
+					now -> rootToken = currentToken;
 					now -> addConnection(currentToken.tokenValue[0]);
 				}
 
