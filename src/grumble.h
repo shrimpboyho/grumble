@@ -84,6 +84,9 @@ namespace GRUMBLE
 			// Function that adds a connection
 			Node* addConnection(int);
 
+			// Function that adds a connection to self
+			Node* enableRecursion(int capture);
+
 			// Function that returns a connection
 			Node* getConnection(int);
 
@@ -116,6 +119,11 @@ namespace GRUMBLE
 		Node* newone = new Node(capture);
 		this -> connections[capture] = newone;
 		return newone;
+	}
+	Node* Node::enableRecursion(int capture)
+	{
+		this -> connections[capture] = this;
+		return this;
 	}
 
 	/* Returns a connected node */
@@ -438,15 +446,46 @@ namespace GRUMBLE
 			// literal character match
 			else if (currentToken.tokenType == PURE_CHAR)
 			{
-				for(int z = 0; z < currentNodes.size(); z++)
+				// if a exact quantifier exists
+				if(currentToken.exactQuantifier != "")
 				{
-					Node* now = currentNodes[z];
-					now -> rootToken = currentToken;
-					now -> addConnection(currentToken.tokenValue[0]);
+					// append the exact amount of nodes
+					int number = atoi(currentToken.exactQuantifier.c_str());
+					for(int k = 0; k < number; k++)
+					{
+						for(int z = 0; z < currentNodes.size(); z++)
+						{
+							Node* now = currentNodes[z];
+							now -> rootToken = currentToken;
+							now -> addConnection(currentToken.tokenValue[0]);
+						}
+						currentNodes = getNewHandle(currentNodes);
+					}
+					
 				}
+				// if a simple quantifier exists
+				else if(currentToken.simpleQuantifier == "+")
+				{
 
-				// get handle on new nodes
-				currentNodes = getNewHandle(currentNodes);
+				}
+				else if(currentToken.simpleQuantifier == "*")
+				{
+					
+				}
+				// if no quantifiers exist
+				else
+				{
+					for(int z = 0; z < currentNodes.size(); z++)
+					{
+						Node* now = currentNodes[z];
+						now -> rootToken = currentToken;
+						now -> addConnection(currentToken.tokenValue[0]);
+					}
+					
+					// get handle on new nodes
+					currentNodes = getNewHandle(currentNodes);
+				}
+				
 			}
 			
 		}
@@ -487,6 +526,7 @@ namespace GRUMBLE
 			std::cout << "On node with capture of: " << (char) current -> capture << std::endl;
 			// Mark a visit
 			current -> incrementVisits();
+			std::cout << "Visit #" << current -> visits << std::endl;
 			if(current -> end == true && i == input.size() - 1)
 				return true;
 		}
