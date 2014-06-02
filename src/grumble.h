@@ -156,7 +156,8 @@ namespace GRUMBLE
 			std::vector <Node*> connections = oldHandle[i] -> connections;
 			for(int k = 0; k < connections.size(); k++)
 			{
-				if(connections[k] != NULL)
+				// Ensure that we're not collecting null connections and self connections
+				if(connections[k] != NULL && connections[k] != oldHandle[i])
 				{
 					newHandle.push_back(connections[k]);
 				}
@@ -466,7 +467,16 @@ namespace GRUMBLE
 				// if a simple quantifier exists
 				else if(currentToken.simpleQuantifier == "+")
 				{
-
+					for(int z = 0; z < currentNodes.size(); z++)
+					{
+						Node* now = currentNodes[z];
+						now -> rootToken = currentToken;
+						now -> addConnection(currentToken.tokenValue[0]);
+						now -> getConnection(currentToken.tokenValue[0]) -> enableRecursion(currentToken.tokenValue[0]);
+					}
+					
+					// get handle on new nodes
+					currentNodes = getNewHandle(currentNodes);
 				}
 				else if(currentToken.simpleQuantifier == "*")
 				{
