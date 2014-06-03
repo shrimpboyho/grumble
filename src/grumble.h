@@ -423,25 +423,105 @@ namespace GRUMBLE
 				// if the escaped character is a whitespace escape char
 				if(currentToken.tokenValue == "s")
 				{
-					for(int z = 0; z < currentNodes.size(); z++)
+					// if a exact quantifier exists
+					if(currentToken.exactQuantifier != "")
 					{
-						Node* now = currentNodes[z];
-						now -> rootToken = currentToken;
-						now -> addConnection(' ');
-						now -> addConnection('\t');
-						now -> addConnection('\n');
-						now -> addConnection('\r');
-						now -> addConnection('\f');
-						now -> addConnection('\v');
+						// append the exact amount of nodes
+						int number = atoi(currentToken.exactQuantifier.c_str());
+						for(int k = 0; k < number; k++)
+						{
+							for(int z = 0; z < currentNodes.size(); z++)
+							{
+								Node* now = currentNodes[z];
+								now -> rootToken = currentToken;
+								now -> addConnection(' ');
+								now -> addConnection('\t');
+								now -> addConnection('\n');
+								now -> addConnection('\r');
+								now -> addConnection('\f');
+								now -> addConnection('\v');
+								
+							}
+							currentNodes = getNewHandle(currentNodes);
+						}
+					}
+					// if a simple quantifier exists
+					else if(currentToken.simpleQuantifier == "+")
+					{
+						for(int z = 0; z < currentNodes.size(); z++)
+						{
+							Node* now = currentNodes[z];
+							now -> rootToken = currentToken;
+							now -> addConnection(' ') -> enableRecursion(' ') 
+							                          -> enableRecursion('\t')
+							                          -> enableRecursion('\n')
+							                          -> enableRecursion('\r')
+							                          -> enableRecursion('\f')
+							                          -> enableRecursion('\v');
+							now -> addConnection('\t') -> enableRecursion(' ') 
+							                          -> enableRecursion('\t')
+							                          -> enableRecursion('\n')
+							                          -> enableRecursion('\r')
+							                          -> enableRecursion('\f')
+							                          -> enableRecursion('\v');
+							now -> addConnection('\n') -> enableRecursion(' ') 
+							                          -> enableRecursion('\t')
+							                          -> enableRecursion('\n')
+							                          -> enableRecursion('\r')
+							                          -> enableRecursion('\f')
+							                          -> enableRecursion('\v');
+							now -> addConnection('\r') -> enableRecursion(' ') 
+							                          -> enableRecursion('\t')
+							                          -> enableRecursion('\n')
+							                          -> enableRecursion('\r')
+							                          -> enableRecursion('\f')
+							                          -> enableRecursion('\v');
+							now -> addConnection('\f') -> enableRecursion(' ') 
+							                          -> enableRecursion('\t')
+							                          -> enableRecursion('\n')
+							                          -> enableRecursion('\r')
+							                          -> enableRecursion('\f')
+							                          -> enableRecursion('\v');
+							now -> addConnection('\v') -> enableRecursion(' ') 
+							                          -> enableRecursion('\t')
+							                          -> enableRecursion('\n')
+							                          -> enableRecursion('\r')
+							                          -> enableRecursion('\f')
+							                          -> enableRecursion('\v');
+						}
+						currentNodes = getNewHandle(currentNodes);
+					}
+					else if(currentToken.simpleQuantifier == "*")
+					{
 						
+					}
+					// if bounds quanifier exists
+					else if(currentToken.boundQuantifier.first != "" || currentToken.boundQuantifier.second != "")
+					{
+
+					}
+					// if no quantifiers exist
+					else
+					{
+						for(int z = 0; z < currentNodes.size(); z++)
+						{
+							Node* now = currentNodes[z];
+							now -> rootToken = currentToken;
+							now -> addConnection(' ');
+							now -> addConnection('\t');
+							now -> addConnection('\n');
+							now -> addConnection('\r');
+							now -> addConnection('\f');
+							now -> addConnection('\v');
+							
+						}
+						currentNodes = getNewHandle(currentNodes);
 					}
 					
 				}
 
 				/* TODO: IMPLEMENT MORE ESCAPE CHARACTERS */
 
-				// get handle on new nodes
-				currentNodes = getNewHandle(currentNodes);
 			}
 
 			// literal character match
@@ -471,8 +551,7 @@ namespace GRUMBLE
 					{
 						Node* now = currentNodes[z];
 						now -> rootToken = currentToken;
-						now -> addConnection(currentToken.tokenValue[0]);
-						now -> getConnection(currentToken.tokenValue[0]) -> enableRecursion(currentToken.tokenValue[0]);
+						now -> addConnection(currentToken.tokenValue[0]) -> enableRecursion(currentToken.tokenValue[0]);
 					}
 					
 					// get handle on new nodes
@@ -481,6 +560,11 @@ namespace GRUMBLE
 				else if(currentToken.simpleQuantifier == "*")
 				{
 					
+				}
+				// if bounds quanifier exists
+				else if(currentToken.boundQuantifier.first != "" || currentToken.boundQuantifier.second != "")
+				{
+
 				}
 				// if no quantifiers exist
 				else
